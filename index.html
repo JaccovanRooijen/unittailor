@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#F5F2EB;font-family:'Hanken Grotesk',sans-serif;min-height:600px;overflow:hidden;}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-20px) scale(1.04);}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-20px,30px) scale(0.97);}}
+@keyframes drift3{0%,100%{transform:translate(0,0);}33%{transform:translate(15px,10px);}66%{transform:translate(-10px,-15px);}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.5);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.bg{position:fixed;inset:0;z-index:0;}
+.bg svg{position:absolute;inset:0;width:100%;height:100%;}
+.bg .grid{position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(28,43,74,0.06) 1px,transparent 0);background-size:32px 32px;}
+.s1{animation:drift1 14s ease-in-out infinite;}
+.s2{animation:drift2 18s ease-in-out infinite;}
+.s3{animation:drift3 22s ease-in-out infinite;}
+#landing{position:relative;z-index:1;min-height:600px;display:flex;align-items:center;justify-content:center;transition:opacity 0.7s ease,transform 0.7s ease;}
+#landing.fading{opacity:0;transform:translateY(-24px) scale(0.98);}
+.content{text-align:center;max-width:520px;padding:2rem;animation:fadeUp 0.8s ease forwards;}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(28,43,74,0.12);border-radius:100px;padding:6px 16px;margin-bottom:1.8rem;font-size:12px;color:#888780;letter-spacing:0.06em;font-weight:500;}
+.dot{width:7px;height:7px;border-radius:50%;background:#E8A020;display:inline-block;animation:pulse 2s ease-in-out infinite;}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(1.8rem,5vw,3rem);color:#1C2B4A;line-height:1.1;margin:0 0 1rem;letter-spacing:-0.02em;}
+h1 span{color:#E8A020;}
+p{font-size:0.95rem;color:#888780;line-height:1.7;margin:0 0 2rem;max-width:400px;margin-left:auto;margin-right:auto;}
+.cta{background:#E8A020;color:#fff;border:none;border-radius:8px;padding:13px 34px;font-size:0.95rem;font-weight:700;font-family:'Hanken Grotesk',sans-serif;cursor:pointer;letter-spacing:0.01em;box-shadow:0 4px 20px rgba(232,160,32,0.35);transition:background 0.2s,transform 0.1s,box-shadow 0.2s;}
+.cta:hover{background:#C8881A;transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,160,32,0.45);}
+.cta:active{transform:scale(0.98);}
+.badges{display:flex;gap:24px;justify-content:center;margin-top:2.5rem;flex-wrap:wrap;}
+.feat{display:flex;align-items:center;gap:7px;font-size:12px;color:#888780;font-weight:500;}
+#game{position:relative;z-index:1;min-height:600px;display:none;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;animation:fadeIn 0.6s ease forwards;}
+#game.show{display:flex;}
+.game-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.4rem;color:#1C2B4A;margin-bottom:1.2rem;letter-spacing:-0.02em;}
+.game-title span{color:#E8A020;}
+.canvas-wrap{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(28,43,74,0.14),0 0 0 1.5px rgba(28,43,74,0.12);background:#F5F2EB;}
+canvas{display:block;max-width:100%;}
+#gameover{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(245,242,235,0.9);}
+#gameover.show{display:flex;}
+.go-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.3rem;color:#1C2B4A;margin-bottom:4px;}
+.go-score{font-size:13px;color:#888780;margin-bottom:18px;}
+.retry{background:#E8A020;color:#fff;border:none;border-radius:8px;padding:10px 26px;font-size:0.85rem;font-weight:700;font-family:'Hanken Grotesk',sans-serif;cursor:pointer;box-shadow:0 3px 14px rgba(232,160,32,0.4);}
+.hint{margin-top:14px;font-size:12px;color:#888780;}
+</style>
+</head>
+<body>
+<div class="bg">
+  <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <ellipse class="s1" cx="150" cy="150" rx="300" ry="220" fill="rgba(232,160,32,0.07)"/>
+    <ellipse class="s2" cx="680" cy="480" rx="300" ry="220" fill="rgba(28,43,74,0.05)"/>
+    <ellipse class="s3" cx="600" cy="100" rx="200" ry="150" fill="rgba(232,160,32,0.05)"/>
+    <ellipse class="s1" cx="50" cy="550" rx="220" ry="160" fill="rgba(28,43,74,0.04)"/>
+  </svg>
+  <div class="grid"></div>
+</div>
+
+<div id="landing">
+  <div class="content">
+    <div class="badge"><span class="dot"></span>BINNENKORT BESCHIKBAAR</div>
+    <h1>Functioneel vanbinnen.<br><span>Op maat vanbuiten.</span></h1>
+    <p>Geef je buitenunit een make-over in enkele minuten. Onze doe-het-zelf vinylwraps zijn gereedschapvrij, weerbestendig en ontworpen om te duren.</p>
+    <button class="cta" id="readyBtn">I'm ready</button>
+    <div class="badges">
+      <div class="feat"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E8A020" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#E8A020" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>5 jaar garantie</div>
+      <div class="feat"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E8A020" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#E8A020" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Weerbestendige materialen</div>
+      <div class="feat"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E8A020" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#E8A020" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Makkelijk geplaatst</div>
+    </div>
+  </div>
+</div>
+
+<div id="game">
+  <div class="game-title">The Unit <span>Runner</span></div>
+  <div class="canvas-wrap">
+    <canvas id="gc" width="660" height="200"></canvas>
+    <div id="gameover">
+      <div class="go-title">Game Over</div>
+      <div class="go-score" id="goScore">Score: 0</div>
+      <button class="retry" id="retryBtn">Probeer opnieuw</button>
+    </div>
+  </div>
+  <div class="hint">SPATIE of klik om te springen</div>
+</div>
+
+<script>
+const W=660,H=200,GND=152,GRAV=0.58,JMPV=-12,ISPD=4.5;
+let running=false,dead=false,started=false,score=0,hiScore=0,frame=0;
+let px=72,py=GND,pvy=0,onGnd=true,pw=26,ph=34;
+let obs=[],nextObs=1500,spd=ISPD,animId=null;
+
+const canvas=document.getElementById('gc');
+const ctx=canvas.getContext('2d');
+const gameOver=document.getElementById('gameover');
+const goScore=document.getElementById('goScore');
+const gameDiv=document.getElementById('game');
+const landingDiv=document.getElementById('landing');
+
+function drawPlayer(){
+  ctx.fillStyle='#1C2B4A';
+  ctx.beginPath();ctx.roundRect(px,py-ph,pw,ph,4);ctx.fill();
+  ctx.fillStyle='#E8A020';
+  ctx.beginPath();ctx.arc(px+pw-6,py-ph+8,3.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(px+pw-6,py-ph+8,1.8,0,Math.PI*2);ctx.fill();
+  if(onGnd){
+    const lp=(frame*0.18)%(Math.PI*2);
+    ctx.fillStyle='#1C2B4A';
+    ctx.fillRect(px+3,py,6,5+Math.sin(lp)*3);
+    ctx.fillRect(px+14,py,6,5-Math.sin(lp)*3);
+  } else {
+    ctx.fillStyle='#1C2B4A';
+    ctx.fillRect(px+3,py,6,5);ctx.fillRect(px+14,py,6,5);
+  }
+}
+function drawObs(o){
+  ctx.fillStyle='#1C2B4A';
+  ctx.beginPath();ctx.roundRect(o.x,o.y-o.h,o.w,o.h,3);ctx.fill();
+  ctx.fillStyle='#E8A020';
+  const sp=Math.floor(o.w/10);
+  for(let i=0;i<sp;i++){
+    const sx=o.x+i*10+5;
+    ctx.beginPath();ctx.moveTo(sx-3.5,o.y-o.h);ctx.lineTo(sx,o.y-o.h-7);ctx.lineTo(sx+3.5,o.y-o.h);ctx.fill();
+  }
+}
+function drawGround(){
+  ctx.strokeStyle='#1C2B4A';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,GND+7);ctx.lineTo(W,GND+7);ctx.stroke();
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(28,43,74,0.18)';
+  const off=(frame*spd*0.4)%40;
+  for(let x=-off;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,GND+7);ctx.lineTo(x+18,GND+7);ctx.stroke();}
+}
+function drawScore(){
+  ctx.fillStyle='#1C2B4A';
+  ctx.font="600 13px 'Hanken Grotesk',sans-serif";
+  ctx.textAlign='right';
+  ctx.fillText(Math.floor(score).toString().padStart(5,'0'),W-12,24);
+  if(hiScore>0){ctx.fillStyle='#888780';ctx.font="500 12px 'Hanken Grotesk',sans-serif";ctx.fillText('HI '+Math.floor(hiScore).toString().padStart(5,'0'),W-90,24);}
+  ctx.textAlign='left';
+}
+function drawHint(){
+  ctx.fillStyle='#888780';ctx.font="500 12px 'Hanken Grotesk',sans-serif";ctx.textAlign='center';
+  ctx.fillText('Druk SPATIE of klik om te starten',W/2,GND-55);ctx.textAlign='left';
+}
+
+function loop(){
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#F5F2EB';ctx.fillRect(0,0,W,H);
+  drawGround();
+  if(!started){drawPlayer();drawScore();drawHint();animId=requestAnimationFrame(loop);return;}
+  if(running&&!dead){
+    frame++;score+=0.1;spd=ISPD+score*0.003;
+    pvy+=GRAV;py+=pvy;
+    if(py>=GND){py=GND;pvy=0;onGnd=true;}
+    nextObs-=spd;
+    if(nextObs<=0){
+      const h=26+Math.random()*20,w=16+Math.random()*13;
+      obs.push({x:W+20,y:GND,w,h});
+      nextObs=Math.max(550,1500-score*0.8)+Math.random()*350;
+    }
+    for(const o of obs)o.x-=spd;
+    obs=obs.filter(o=>o.x+o.w>-10);
+    const pad=4;
+    for(const o of obs){
+      if(px+pw-pad>o.x+pad&&px+pad<o.x+o.w-pad&&py>o.y-o.h+pad&&py-ph<o.y+pad){
+        dead=true;running=false;if(score>hiScore)hiScore=score;
+        goScore.textContent='Score: '+Math.floor(score);
+        gameOver.classList.add('show');
+      }
+    }
+  }
+  for(const o of obs)drawObs(o);
+  drawPlayer();drawScore();
+  animId=requestAnimationFrame(loop);
+}
+
+function doJump(){
+  if(!started){started=true;running=true;}
+  if(onGnd&&!dead){pvy=JMPV;onGnd=false;}
+}
+function doRestart(){
+  dead=false;score=0;frame=0;obs=[];nextObs=1500;spd=ISPD;
+  px=72;py=GND;pvy=0;onGnd=true;running=true;
+  gameOver.classList.remove('show');
+}
+
+document.getElementById('readyBtn').addEventListener('click',()=>{
+  landingDiv.classList.add('fading');
+  setTimeout(()=>{landingDiv.style.display='none';gameDiv.classList.add('show');animId=requestAnimationFrame(loop);},700);
+});
+document.getElementById('retryBtn').addEventListener('click',doRestart);
+canvas.addEventListener('click',()=>{if(dead)doRestart();else doJump();});
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();if(dead)doRestart();else doJump();}
+});
+</script>
+</body>
+</html>
